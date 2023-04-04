@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-@CrossOrigin(origins = "http://localhost:3000" )
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/verifyLink")
 public class LinkVerfiController {

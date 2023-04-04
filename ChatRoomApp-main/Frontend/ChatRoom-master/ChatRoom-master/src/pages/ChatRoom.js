@@ -1,161 +1,192 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Messages from "../Components/Messages";
+// import Messages from "../Components/Messages";
 import "./ChatRoom.scss";
+//import React, { useEffect, useState } from 'react'
+import { over } from 'stompjs';
+import SockJS from 'sockjs-client';
 
-export default function ChatRoom() {
-  const location = useLocation();
-  const { topic,name } = location.state;
-  const navigate = useNavigate();
 
-  const [messages, SetMessages] = useState([]);
-  const [ranks, setRanks] = useState([]);
-  const [sidebarToggled, setSidebarToggled] = useState(false);
-  const msgs = [];
-  const rnks = [];
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    // messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    if (messagesEndRef.current !== null)
-      messagesEndRef.current.scrollIntoView({
-        block: "end",
-        behavior: "smooth",
-      });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const msg = String(e.target.message.value);
-
-    const obj = {
-      message: msg,
-      name: name,
-    };
-
-    try {
-      const res = await axios.post("http://localhost:3001/messages", obj);
-    } catch (err) {
-      alert(err);
-    }
-    SetMessages([]);
-    fetchMessage();
-    e.target.message.value = "";
-  };
-
-  const fetchRanks = async () => {
-    var res = [];
-    try {
-      res = await axios.get("http://localhost:3001/ranks");
-    } catch (err) {
-      alert(err);
-    }
-    // const temp2 = res.data;
-    // temp2.forEach((ele) => {
-    //   rnks.push({ rank: ele.rank, name: ele.name, id: ele.id });
-    // });
-
-    setRanks(res.data);
-  };
-
-  const fetchMessage = async () => {
-    var res = [];
-    try {
-      res = await axios.get("http://localhost:3001/messages");
-    } catch (err) {
-      alert(err);
-    }
-    const temp2 = res.data;
-    temp2.forEach((ele) => {
-      msgs.push({ message: ele.message, name: ele.name, id: ele.id });
-    });
-
-    SetMessages(msgs);
-
-    scrollToBottom();
-  };
-
+var stompClient = null;
+const ChatRoom = () => {
+  /*const [privateChats, setPrivateChats] = useState(new Map());  */
+  const [publicChats, setPublicChats] = useState([]);
+  /* const [tab,setTab] =useState("CHATROOM");*/
+  const [userData, setUserData] = useState({
+    username: '',
+    receivername: '',
+    connected: false,
+    message: ''
+  });
   useEffect(() => {
-    SetMessages([]);
-    fetchMessage();
-    fetchRanks();
-  }, []);
+    console.log(userData);
+  }, [userData]);
 
-  return (
-    <>
-      <section className="bg-[#413D3D] min-h-screen flex items-center justify-center flex-col">
-        <div className="endchat">
-          <aside className={`${sidebarToggled ? "visible" : ""}`}>
-            <div className="ranks">
-              <table>
-                <tr>
-                  <th>Rank</th>
-                  <th>Name</th>
-                </tr>
-                {ranks &&
-                  ranks.map((e) => {
-                    return (
-                      <tr key={e.id}>
-                        <th>{e.rank}</th>
-                        <th>{e.name.toUpperCase()}</th>
-                      </tr>
-                    );
-                  })}
-              </table>
-              <div className="btn">
-                <button className="refresh" onClick={() => fetchRanks()}>
-                  Refresh
-                </button>
-                <button
-                  className="refresh"
-                  onClick={() => setSidebarToggled(!sidebarToggled)}
-                >
-                  Back
-                </button>
-              </div>
+  const connect = () => {
+    let Sock = new SockJS("/ws");
+    stompClient = over(Sock);
+    stompClient.connect({}, onConnected, onError);
+  }
+
+  const onConnected = () => {
+    setUserData({ ...userData, "connected": true });
+    stompClient.subscribe('/chatroom/public', onMessageReceived);
+    /*stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage);*/
+    userJoin();
+  }
+
+  const userJoin = () => {
+    var chatMessage = {
+      senderName: userData.username,
+      status: "JOIN"
+    };
+    stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
+  }
+
+  const onMessageReceived = (payload) => {
+    var payloadData = JSON.parse(payload.body);
+    switch (payloadData.status) {
+      case "JOIN":
+       /* if (!privateChats.get(payloadData.senderName)) {
+          privateChats.set(payloadData.senderName, []);
+          setPrivateChats(new Map(privateChats));
+        }*/
+        break;
+      case "MESSAGE":
+        publicChats.push(payloadData);
+        setPublicChats([...publicChats]);
+        break;
+    }
+  }
+
+  /* const onPrivateMessage = (payload)=>{
+       console.log(payload);
+       var payloadData = JSON.parse(payload.body);
+       if(privateChats.get(payloadData.senderName)){
+           privateChats.get(payloadData.senderName).push(payloadData);
+           setPrivateChats(new Map(privateChats));
+       }else{
+           let list =[];
+           list.push(payloadData);
+           privateChats.set(payloadData.senderName,list);
+           setPrivateChats(new Map(privateChats));
+       }
+   }*/
+
+  const onError = (err) => {
+    console.log(err);
+
+  }
+
+  const handleMessage = (event) => {
+    const { value } = event.target;
+    setUserData({ ...userData, "message": value });
+  }
+  const sendValue = () => {
+    if (stompClient) {
+      var chatMessage = {
+        senderName: userData.username,
+        message: userData.message,
+        status: "MESSAGE"
+      };
+      console.log(chatMessage);
+      stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
+      setUserData({ ...userData, "message": "" });
+    }
+  }
+
+  /*  const sendPrivateValue=()=>{
+        if (stompClient) {
+          var chatMessage = {
+            senderName: userData.username,
+            receiverName:tab,
+            message: userData.message,
+            status:"MESSAGE"
+          };
+          
+          if(userData.username !== tab){
+            privateChats.get(tab).push(chatMessage);
+            setPrivateChats(new Map(privateChats));
+          }
+          stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+          setUserData({...userData,"message": ""});
+        }*/
+
+
+const handleUsername = (event) => {
+  const { value } = event.target;
+  setUserData({ ...userData, "username": value });
+}
+
+const registerUser = () => {
+  connect();
+}
+
+return (
+    <div className="container">
+      {userData.connected ?
+        <div className="chat-box">
+          {/* <div className="member-list">
+          <ul>
+            <li onClick={() => { setTab("CHATROOM") }} className={`member ${tab === "CHATROOM" && "active"}`}>Chatroom</li>
+            {[...privateChats.keys()].map((name, index) => (
+              <li onClick={() => { setTab(name) }} className={`member ${tab === name && "active"}`} key={index}>{name}</li>
+            ))}
+          </ul>
+        </div>*/ }
+          {<div className="chat-content">
+            <ul className="chat-messages">
+              {publicChats.map((chat, index) => (
+                <li className={`message ${chat.senderName === userData.username && "self"}`} key={index}>
+                  {chat.senderName !== userData.username && <div className="avatar">{chat.senderName}</div>}
+                  <div className="message-data">{chat.message}</div>
+                  {chat.senderName === userData.username && <div className="avatar self">{chat.senderName}</div>}
+                </li>
+              ))}
+            </ul>
+
+            <div className="send-message">
+              <input type="text" className="input-message" placeholder="enter the message" value={userData.message} onChange={handleMessage} />
+              <button type="button" className="send-button" onClick={sendValue}>send</button>
             </div>
-          </aside>
-          <button
-            className="end"
-            onClick={() => setSidebarToggled(!sidebarToggled)}
-          >
-            Show Ranks
-          </button>
+          </div>}
+          {/* {tab !== "CHATROOM" && <div className="chat-content">
+          <ul className="chat-messages">
+            {[...privateChats.get(tab)].map((chat, index) => (
+              <li className={`message ${chat.senderName === userData.username && "self"}`} key={index}>
+                {chat.senderName !== userData.username && <div className="avatar">{chat.senderName}</div>}
+                <div className="message-data">{chat.message}</div>
+                {chat.senderName === userData.username && <div className="avatar self">{chat.senderName}</div>}
+              </li>
+            ))}
+          </ul>
 
-          <button
-            className="end"
-            onClick={() => {
-              if (window.confirm("Are you sure you want to exit?")) {
-                navigate("/");
-              }
-            }}
-          >
-            Exit Chat
-          </button>
-        </div>
-        <div className="chatMain">
-          <div className="topic">
-            <h2>Topic : {topic && topic}</h2>
+          <div className="send-message">
+            <input type="text" className="input-message" placeholder="enter the message" value={userData.message} onChange={handleMessage} />
+            <button type="button" className="send-button" onClick={sendPrivateValue}>send</button>
           </div>
-
-          <br />
-          <div className="chatbox" ref={messagesEndRef}>
-            <Messages messages={messages} name={name} />
-            <div className="test" ref={messagesEndRef}></div>
-          </div>
-          <form action="" className="form" onSubmit={handleSubmit}>
-            <input
-              className="inputMsg"
-              type="text"
-              name="message"
-              placeholder="Enter message"
-            />
-
-            <button className="sendBtn">Send</button>
-          </form>
+        </div>} */}
         </div>
-      </section>
-    </>
+        :
+        <div className="register">
+          <input
+            id="user-name"
+            placeholder="Enter your name"
+            name="userName"
+            value={userData.username}
+            onChange={handleUsername}
+            margin="normal"
+          />
+          <button type="button" onClick={registerUser}>
+            connect
+          </button>
+        </div>}
+    </div>
   );
 }
+
+
+export default ChatRoom
+
+

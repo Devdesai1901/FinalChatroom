@@ -6,7 +6,7 @@ export default function VerifyLink() {
 
   const location = useLocation();
   const { role, data } = location.state;
-
+  const data2 = {}
   
   var res = "";
   const verify = async(e) =>{
@@ -41,13 +41,20 @@ export default function VerifyLink() {
       link: `${linkValue}`
     }
 
+    data2 = {
+      email_id: data.email_id,
+      password: data.password,
+      role:role
+    }
+
+
 
     try {
       res = await axios.post("/verifyLink/verify", data1,{ headers })
         .then((res) => {
           console.log(res)
 
-          if(res == "success")
+          if(res.data == "success")
           {
             Navigate("/chatRoom");
           }

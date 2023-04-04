@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:3000" )
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/count")
 public class MessageCountController

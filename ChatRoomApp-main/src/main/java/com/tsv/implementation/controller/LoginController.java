@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-@CrossOrigin(origins = "http://localhost:3000" ,allowedHeaders = "*" , exposedHeaders = "*" , allowCredentials = "true")
+@CrossOrigin("*")
 @RestController
 @RequestMapping(value = "/login/")
 public class LoginController {

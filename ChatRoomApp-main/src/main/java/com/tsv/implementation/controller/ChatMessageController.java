@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
+@CrossOrigin("*")
 @Controller
 @RequestMapping("/api")
 public class ChatMessageController {

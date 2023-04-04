@@ -1,4 +1,4 @@
-import React, { useState}  from 'react';
+import React, { useState,useEffect}  from 'react';
 import { Link, useLocation ,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,11 +8,15 @@ export default function GenerateLink() {
     const { role, data } = location.state;
     const [generatedLink, setGeneratedLink] = useState("");
     var res = "";
-
+    // useEffect(() => {
+    //     return () => {
+    //         generate();
+    //     };
+    // }, []);
     const navigate=useNavigate();
     
-    const generateLink = async (e) => {
-        e.preventDefault();
+    const generate = async () => {
+        // e.preventDefault();
 
 
         const token = "Bearer " + localStorage.getItem("Token");
@@ -31,11 +35,13 @@ export default function GenerateLink() {
       
        
         try {
-            res = await axios.post("/link/generate", data, { headers })
+            res = axios.post("/link/generate", data, { headers })
                 .then((res) => {
                     console.log(res.data);
-                    setGeneratedLink(res.data);
-
+                    const temp =String(res.data);
+                    setGeneratedLink(temp);
+                    
+                    
                 });
                 // console.log(name);
         } catch (err) {
@@ -67,21 +73,21 @@ export default function GenerateLink() {
                             />
 
                             
-                            <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2" onClick={generateLink} >
+                            <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2" onClick={generate} >
                                 Generate
                             </button>
-                            {/* <Link to={{
-                                pathname: '/addparticipant',
-                                state: { role: role, data: data, generatedLink: generatedLink }
-                            }}> */}
-                            <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2" onClick={navigate("/addparticipant",{state: {role: role, data: data, generatedLink: generatedLink }})} >
+                             <Link to=
+                                "/addparticipant" state={{role: role, data: data, generatedLink: generatedLink }}
+                            > 
+                                <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2 flex flex-col gap-4"  > 
+                            {/* onClick={()=>navigate("/addparticipant",{state: {role: role, data: data, link: generatedLink }})} */}
                                     Next
                                 </button>
-                            {/* </Link> */}
+                             </Link> 
                         </div>
                     </div>
                 </div>
             </section>
-        </>
-    )
+        </>
+    )
 }

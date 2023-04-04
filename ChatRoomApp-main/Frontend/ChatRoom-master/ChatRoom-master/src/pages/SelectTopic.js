@@ -1,12 +1,67 @@
 import React, { useState } from "react";
 import Border from "../Components/Border";
 import "../Style/User_register.css";
-import { Link, useLocation } from "react-router-dom";
+import axios from 'axios';
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-export default function UserLogin() {
+
+export default function SelectTopic() {
   const location = useLocation();
-  const { name } = location.state;
+  const { role, data, link } = location.state;
   const [topic, setTopic] = useState("");
+  const navigate = useNavigate();
+
+  var res = ""
+
+  const addTopic = async (e) =>
+  {
+    
+
+    e.preventDefault();
+
+
+    const token = "Bearer " + localStorage.getItem("Token");
+    console.log(token);
+
+    console.log(data.email_id);
+    console.log(data.password)
+    console.log(role);
+
+    const headers = {
+      'Authorization': `${token}`,
+      'Content-Type': 'application/json'
+    }
+    const hostName = data.email_id
+     
+    const data1 = {
+      hostName: `${hostName}`,
+      topic: `${topic}`
+    }
+
+
+    try {
+      res = await axios.post("/topic/set", data1, { headers })
+        .then((res) => {
+          console.log(res.data)
+          if (res.data == "success") {
+            
+            
+            navigate("/chatRoom" ,  {state : { role: role, data: data, link: link, topic: topic }})
+            alert(" topic added successfully")
+          }
+          else {
+            alert("Server error !!!")
+          }
+
+        })
+      // console.log(name);
+    } catch (err) {
+      alert(err);
+    }
+  }
+
+
+
   return (
     <>
       <section className="bg-[#5b5656] min-h-screen flex items-center justify-center">
@@ -31,12 +86,11 @@ export default function UserLogin() {
                 }}
               />
               {/* <input className="p-2 rounded-xl border" type="text" name="mobileNo" placeholder="Enter Phone No."/> */}
-
-              <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2">
-                <Link to="/addparticipant" state={{ name: name }}>
-                  Enter Chat Room
-                </Link>
+              <Link to="/chatRoom" state={{ role: role , data : data , link : link ,topic : topic}}>
+              <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2" onClick={addTopic} >
+                  Enter Chat Room 
               </button>
+              </Link>
             </div>
             {/* <div className="mt-10 grid grid-cols-3 items-center text-gray-400">
               <hr className="border-gray-400" />

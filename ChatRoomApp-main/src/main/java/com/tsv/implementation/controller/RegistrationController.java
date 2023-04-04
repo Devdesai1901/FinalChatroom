@@ -9,7 +9,7 @@ import com.tsv.implementation.dto.UserRegisteredDTO;
 import com.tsv.implementation.service.DefaultUserService;
 
 @Controller
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @RequestMapping("/registration")
 public class RegistrationController {
 

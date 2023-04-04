@@ -15,11 +15,11 @@ public class TopicServiceImpl implements TopicService{
     @Autowired
     LinkRepository linkRepository;
     @Override
-    public String addTopic(String topic)
+    public String addTopic(String topic , String email)
     {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        UserDetails user = (UserDetails)securityContext.getAuthentication().getPrincipal();
-        Link lo = linkRepository.findByHostName(user.getUsername());
+        /*SecurityContext securityContext = SecurityContextHolder.getContext();
+        UserDetails user = (UserDetails)securityContext.getAuthentication().getPrincipal();*/
+        Link lo = linkRepository.findByHostName(email);
         if(lo != null)
         {
             lo.setTopic(topic);
