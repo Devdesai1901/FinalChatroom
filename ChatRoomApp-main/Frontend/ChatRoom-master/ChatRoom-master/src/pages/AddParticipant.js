@@ -5,10 +5,11 @@ import Border from "../Components/Border";
 import axios from 'axios';
 import "../Style/User_register.css";
 import {  Link, useLocation } from "react-router-dom";
+import GenerateLink from "./GenerateLink";
 
 export default function AddParticipant() {
   const location = useLocation();
-  const { role, data, link } = location.state;
+  const { role, data, generatedLink } = location.state;
   let data2 = {}
   var res = "";
   const addUser = async (e) => {
@@ -28,7 +29,7 @@ export default function AddParticipant() {
     console.log(role);
 
     const data1 = {
-      link: link,
+      link: `${generatedLink}`,
       userName: participant
     }
 
@@ -82,7 +83,7 @@ export default function AddParticipant() {
                 <button className="bg-[#2c2b2b] rounded-xl text-white hover:scale-105 duration-300 py-2" type="submit">
                   Add User
                 </button>
-                <Link to="/topic" state={{ role: role, data: data, link: link }}>
+                <Link to="/topic" state={{ role: role, data: data, link: generatedLink }}>
                 <button className="bg-[#2c2b2b] rounded-xl text-white hover:scale-105 duration-300 py-2">
                  
                     Next

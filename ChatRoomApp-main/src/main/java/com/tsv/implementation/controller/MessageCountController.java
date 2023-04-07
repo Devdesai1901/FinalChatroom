@@ -39,7 +39,7 @@ public class MessageCountController
     @GetMapping("/rank")
     @ResponseBody
     public List<MessageCount> getCount() throws JsonProcessingException {
-
+       System.out.println("in rank data");
        List<MessageCount> data =  messageCountServie.getRank();
 
         return data;

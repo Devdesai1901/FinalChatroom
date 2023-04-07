@@ -1,13 +1,14 @@
 import React from 'react';
 import axios from 'axios';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 export default function VerifyLink() {
 
   const location = useLocation();
+  const navigate = useNavigate()
   const { role, data } = location.state;
   const data2 = {}
-  
+  var linkValue = ""
   var res = "";
   const verify = async(e) =>{
     e.preventDefault();
@@ -28,7 +29,7 @@ export default function VerifyLink() {
     console.log(role);
 
     const inputElement = document.querySelector('input[name="verifylink"]');
-    const linkValue = inputElement.value;
+    linkValue = inputElement.value;
     console.log(linkValue);
     /*const linkData = {
       'link':  `${linkValue}`
@@ -41,11 +42,11 @@ export default function VerifyLink() {
       link: `${linkValue}`
     }
 
-    data2 = {
-      email_id: data.email_id,
-      password: data.password,
-      role:role
-    }
+    // data2 = {
+    //   email_id: data.email_id,
+    //   password: data.password,
+    //   role:role
+    // }
 
 
 
@@ -56,7 +57,7 @@ export default function VerifyLink() {
 
           if(res.data == "success")
           {
-            Navigate("/chatRoom");
+            navigate("/chatRoom" , { state:{role:role , data:data , link: linkValue }});
           }
           else if (res == "linkerror")
           {
@@ -90,15 +91,15 @@ export default function VerifyLink() {
                 type="text"
                 name="verifylink"
                 placeholder="Enter the Link"
-                // onChange={(event) => {
-                //   setTopic(event.target.value);
-                // }}
+               
               />
+              {/* <Link to="/chatroom" state={{role:role , data:data , link: linkValue }}>          */}
               <button className="bg-[#5b5656] rounded-xl text-white hover:scale-105 duration-300 py-2" onClick={verify}  >
-                 {/* <Link to="/chatroom">         state={{ name: name }} */}
+                  
                   Enter Chat Room
-                {/* </Link> */}
+                
               </button>
+              {/* </Link>  */}
             </div>
           </div>
         </div>

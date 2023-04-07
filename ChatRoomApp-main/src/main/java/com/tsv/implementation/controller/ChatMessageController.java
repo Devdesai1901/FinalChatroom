@@ -8,8 +8,11 @@ import com.tsv.implementation.dao.LinkRepository;
 import com.tsv.implementation.dao.MessageCountRepository;
 import com.tsv.implementation.dao.RoleRepository;
 import com.tsv.implementation.dao.UserRepository;
+import com.tsv.implementation.dto.MessageDto;
 import com.tsv.implementation.dto.UserLoginDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,7 +48,7 @@ public class ChatMessageController {
     RoleRepository roleRepository;
 
 
-    @GetMapping
+  /*  @GetMapping
    public String indexPage(Model model)
     {
 
@@ -90,7 +93,7 @@ public class ChatMessageController {
 
         model.addAttribute("userDetails", email);
         return "index";
-    }
+    }*/
 
 
    public ChatMessageController(ChatMessageService chatMessageService) {
@@ -99,26 +102,27 @@ public class ChatMessageController {
     }
 
 
-    @GetMapping("/groups/{groupId}/messages")
+    @GetMapping("/group/messages")
     public List<ChatMessage> getMessagesForGroup(@PathVariable long groupId) {
         return chatMessageService.getMessagesForGroup(groupId);
     }
     //
-    @PutMapping("/groups/{groupId}/messages")
-    public void saveMessage(@RequestParam("chat_message") String message,@RequestParam("username") String mail,@RequestParam("role") String roleAtt,@PathVariable long groupId) {
+    @PutMapping("/groups/messages")
+    public ResponseEntity<HttpStatus> saveMessage(@RequestBody MessageDto messageDto) {
        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setMessage(message);
-        chatMessage.setGroupId(groupId);
-        chatMessage.setSenderId(mail);
+        chatMessage.setMessage(messageDto.getMessage());
+        chatMessage.setGroupId(messageDto.getLink());
+        chatMessage.setSenderId(messageDto.getEmail());
         chatMessage.setTimestamp(LocalDateTime.now());
-        System.out.println(message);
-        System.out.println(groupId);
+        System.out.println(messageDto.getMessage());
+        System.out.println(messageDto.getLink());
        // System.out.println(mail);
          chatMessageService.saveMessage(chatMessage);
-         System.out.println(roleAtt);
-         if(roleAtt.equals("USER"))
+         System.out.println(messageDto.getRole());
+         String role  = messageDto.getRole();
+         if(role.equals("USER"))
          {
-             messageCountController.addCount(mail);
+             messageCountController.addCount(messageDto.getEmail());
          }
         // return "redirect:/count/addon";
         /*ChatMessage error_mesg = new ChatMessage();
@@ -126,6 +130,8 @@ public class ChatMessageController {
         chatMessage.setGroupId(groupId);
         chatMessage.setTimestamp(LocalDateTime.now());
         return error_mesg;*/
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

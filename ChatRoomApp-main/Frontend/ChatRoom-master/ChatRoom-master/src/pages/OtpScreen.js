@@ -70,6 +70,10 @@ export default function OtpScreen() {
       else {
         navigate("/Verifylink", { state: { role: role, data: data1 } });
       }
+      // else if(role == "ADMIN")
+      // {
+      //   navigate("/admindashboard")
+      // }
     } catch (err) {
       alert(err);
     }
