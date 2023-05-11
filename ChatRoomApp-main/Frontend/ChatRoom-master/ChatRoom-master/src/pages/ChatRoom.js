@@ -15,6 +15,7 @@ const ChatRoom = () => {
   const [rankData, setRankData] = useState([]);
   const location = useLocation();
   const { role, data, link, topic } = location.state;
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     username: '',
     receivername: '',
@@ -82,6 +83,11 @@ const ChatRoom = () => {
       setMessageCount();
       autoRefresh();
     }
+  }
+
+
+  const logout  = () => {
+
   }
 
   const username = data.email_id
@@ -156,7 +162,7 @@ const ChatRoom = () => {
           {
             <div className="chat-content">
               <div className="topic">
-                <h2>Topic : </h2>
+                <h2>Topic : {topic && topic} </h2>
               </div>
               <ul className="chat-messages">
                 {publicChats.map((chat, index) => (
@@ -172,7 +178,23 @@ const ChatRoom = () => {
                 <input type="text" className="input-message" placeholder="enter the message" value={userData.message} onChange={handleMessage} />
 
                 <button type="button" className="send-button" onClick={sendValue}>Send</button>
-                <button type="button" className="exit-button" >Exit</button>
+                <button type="button" className="exit-button" onClick={() => {
+                  if (window.confirm("Are you sure you want to exit?")) {
+                   
+                   /* try {
+                      res = axios.get("/api/logout", dataTransfer)
+                        .then((res) => {
+                          navigate("/");
+                        })
+
+                    }
+                    catch
+                    {
+                      alert("server error")
+                    }*/
+                    navigate("/");
+                   
+                  }}}  >Exit</button>
 
               </div>
             </div>

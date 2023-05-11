@@ -50,7 +50,7 @@ public class SpringSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/login/authenticate","/registration/registeruser"  ) //"/login/authenticate", "/registration" , "/login"
                 .permitAll()
-                .antMatchers("/count/rank" , "*/chatroom/public/*" , "/ws/**" ,"/api/groups/messages" , "/app/message" , "/message" , "/chatroom" , "/app")
+                .antMatchers("/count/rank" , "*/chatroom/public/*" , "/ws/**" ,"/api/groups/messages" , "/app/message" , "/message" , "/chatroom" , "/app" , "/api/logout")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

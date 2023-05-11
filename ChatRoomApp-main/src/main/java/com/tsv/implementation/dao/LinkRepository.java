@@ -10,4 +10,6 @@ public interface LinkRepository extends JpaRepository<Link, Integer>
     Link findByHostName(String email);
 
     Link findByLink(int data);
+
+   void  deleteAllByLink(long link);
 }

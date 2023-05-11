@@ -11,7 +11,7 @@ public interface MessageCountRepository extends JpaRepository<MessageCount , Int
 {
       MessageCount findByUserName(String userName);
       List<MessageCount> findAllByOrderByMessageCountDesc();//orderByCountDec();
-
+      void deleteAllByLink(long link);
 
      // MessageCount getReferenceByUserName(String mail);
 }

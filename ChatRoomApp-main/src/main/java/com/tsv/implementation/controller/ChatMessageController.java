@@ -48,6 +48,8 @@ public class ChatMessageController {
     RoleRepository roleRepository;
 
 
+
+
   /*  @GetMapping
    public String indexPage(Model model)
     {
@@ -131,6 +133,20 @@ public class ChatMessageController {
         chatMessage.setTimestamp(LocalDateTime.now());
         return error_mesg;*/
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/logout")
+    public ResponseEntity<HttpStatus> logout(@RequestBody MessageDto messageDto)
+    {
+        if(messageDto.getRole() == "HOST")
+        {
+            long link = messageDto.getLink();
+            linkRepository.deleteAllByLink(link);
+            messageCountRepository.deleteAllByLink(link);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
