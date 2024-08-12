@@ -28,8 +28,8 @@ Currently, the application's ranking system is driven by NLP, ensuring that the 
 
 ## Installation Setup
 
-1. Clone the repository
-   ou can clone this repository using command:
+1. Clone the repository  
+   you can clone this repository using command: https://github.com/Devdesai1901/FinalChatroom.git
 2. Unzip FinalChartoom.xcodeproj.zip and then open it.
 3. Go to client folder and use the this command **pnpm i** to install all the packages
 4. Go to the server folder and  run this command to start the application **mvn spring-boot:run**.
