@@ -46,7 +46,7 @@ Currently, the application's ranking system is driven by NLP, ensuring that the 
 -  **Node 11**
 
 ## Facing any issues???
-Feel free to [Open an Issue](https://github.com/username/repository-name/issues/new)
+Feel free to [Open an Issue](https://github.com/Devdesai1901/FinalChatroom/issues)
  I'll be glad to help you. 😁
   
    
